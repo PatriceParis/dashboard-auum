@@ -16,12 +16,22 @@ function readJSON<T>(filename: string, fallback: T): T {
 
 export function loadDashboardData(): DashboardData {
   const meta = readJSON("last-updated.json", { timestamp: "", period: undefined } as any);
+  const allCampaigns = readJSON("campaigns.json", []) as DashboardData["campaigns"];
+  const activeCampaigns = allCampaigns.filter((c) => c.status === "ACTIVE");
+  const activeCampaignIds = new Set(activeCampaigns.map((c) => c.id));
+
   return {
     campaignGroups: readJSON("campaign-groups.json", []),
-    campaigns: readJSON("campaigns.json", []),
-    analytics: readJSON("analytics.json", []),
-    dailyAnalytics: readJSON("daily-analytics.json", []),
-    creatives: readJSON("creatives.json", []),
+    campaigns: activeCampaigns,
+    analytics: (readJSON("analytics.json", []) as DashboardData["analytics"]).filter(
+      (a) => activeCampaignIds.has(a.campaignId)
+    ),
+    dailyAnalytics: (readJSON("daily-analytics.json", []) as DashboardData["dailyAnalytics"]).filter(
+      (d) => activeCampaignIds.has(d.campaignId)
+    ),
+    creatives: (readJSON("creatives.json", []) as DashboardData["creatives"]).filter(
+      (cr) => activeCampaignIds.has(cr.campaignId)
+    ),
     lastUpdated: meta.timestamp,
     dataPeriod: meta.period,
   };

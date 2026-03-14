@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { DashboardData, Region } from "@/lib/types";
-import { REGIONS, REGION_LABELS } from "@/lib/constants";
+import type { DashboardData } from "@/lib/types";
 import { RegionTab } from "./region-tab";
 import { DateSelector } from "./date-selector";
 import { Clock, BarChart3 } from "lucide-react";
@@ -12,7 +11,6 @@ interface Props {
 }
 
 export function DashboardShell({ data }: Props) {
-  const [activeRegion, setActiveRegion] = useState<Region>("Global");
 
   // Date range state
   const defaultStart = data.dataPeriod?.start ??
@@ -87,7 +85,7 @@ export function DashboardShell({ data }: Props) {
             <h1 className="text-2xl font-bold text-foreground">
               LinkedIn Ads Dashboard
             </h1>
-            <p className="text-sm text-muted-foreground">Auum</p>
+            <p className="text-sm text-muted-foreground">Auum &lt;&gt; Bulldozer Collective</p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -104,41 +102,8 @@ export function DashboardShell({ data }: Props) {
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex gap-1 bg-muted p-1 rounded-lg mb-6 w-fit">
-        {REGIONS.map((region) => {
-          const count =
-            region === "Global"
-              ? data.campaigns.length
-              : data.campaigns.filter((c) => c.region === region).length;
-
-          return (
-            <button
-              key={region}
-              onClick={() => setActiveRegion(region)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeRegion === region
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {REGION_LABELS[region]}
-              <span
-                className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-                  activeRegion === region
-                    ? "bg-primary/10 text-primary"
-                    : "bg-muted-foreground/10"
-                }`}
-              >
-                {count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Active Tab Content */}
-      <RegionTab data={filteredData} region={activeRegion} />
+      {/* Content */}
+      <RegionTab data={filteredData} region="Global" />
     </div>
   );
 }
