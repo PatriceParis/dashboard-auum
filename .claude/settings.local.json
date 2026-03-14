@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npx --version)",
+      "WebSearch",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)",
+      "Bash(npx create-next-app@latest temp-init --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)",
+      "Bash(rm -rf temp-init)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npx next:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(where npm.cmd)",
+      "Bash(where npm:*)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(iconv -f UTF-16LE -t UTF-8 \"/c/Users/patri/Downloads/account_504986107_campaign_performance_report.csv\")",
+      "Read(//tmp/**)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); const buf=fs.readFileSync\\(''C:/Users/patri/Downloads/account_504986107_campaign_performance_report.csv''\\); const text=buf.toString\\(''utf16le''\\); const lines=text.split\\(''\\\\n''\\); lines.forEach\\(\\(l,i\\)=>console.log\\(''LINE ''+i+'': ''+l.substring\\(0,200\\)\\)\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(node scripts/parse-csv.js)",
+      "Bash(curl -L -o \"C:/Users/patri/dashboard-cybervadis/public/cybervadis-logo.png\" \"https://media.licdn.com/dms/image/v2/C4E0BAQGDONuFqyHYdQ/company-logo_100_100/company-logo_100_100/0/1630622750707/cybervadis_logo?e=1753920000&v=beta&t=placeholder\")",
+      "Bash(npx tsx:*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"require\\(''dotenv''\\).config\\(\\); console.log\\(process.env.LINKEDIN_ACCESS_TOKEN ? ''Token length: '' + process.env.LINKEDIN_ACCESS_TOKEN.length : ''No token''\\);\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''data/campaigns.json'',''utf8''\\)\\);console.log\\(''Total:'',d.length\\);d.forEach\\(c=>console.log\\(c.id, c.name.substring\\(0,50\\), c.region\\)\\)\")",
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''data/analytics.json'',''utf8''\\)\\);console.log\\(''Total:'',d.length\\);d.forEach\\(a=>console.log\\(a.campaignId,''impr:'',a.impressions,''clicks:'',a.clicks,''cost:'',a.costInLocalCurrency.toFixed\\(2\\)\\)\\)\")",
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''data/daily-analytics.json'',''utf8''\\)\\);console.log\\(''Total points:'',d.length\\);if\\(d.length>0\\){console.log\\(''First:'',JSON.stringify\\(d[0]\\)\\);console.log\\(''Last:'',JSON.stringify\\(d[d.length-1]\\)\\)}\")"
+    ]
+  }
+}
