@@ -257,6 +257,15 @@ export class LinkedInAPIClient {
       `/rest/images?ids=List(${ids})`
     );
   }
+
+  // ── Videos ──
+  async getVideo(videoUrn: string) {
+    return this.get<{
+      downloadUrl?: string;
+      thumbnail?: string;
+      status?: string;
+    }>(`/rest/videos/${encodeURIComponent(videoUrn)}`);
+  }
 }
 
 function sleep(ms: number) {

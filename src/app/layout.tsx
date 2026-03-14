@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CyberVadis - LinkedIn Ads Dashboard",
-  description: "Dashboard de suivi des campagnes LinkedIn Ads par region",
+  title: "Auum - LinkedIn Ads Dashboard",
+  description: "Dashboard de suivi des campagnes LinkedIn Ads",
 };
 
 export default function RootLayout({

@@ -31,7 +31,7 @@ function detectRegion(groupName: string): Region {
   return "Global";
 }
 
-async function downloadImage(url: string, filename: string): Promise<string> {
+async function downloadMedia(url: string, filename: string): Promise<string> {
   ensureDir(CREATIVES_DIR);
   const filepath = path.join(CREATIVES_DIR, filename);
 
@@ -42,7 +42,7 @@ async function downloadImage(url: string, filename: string): Promise<string> {
     fs.writeFileSync(filepath, buffer);
     return `/creatives/${filename}`;
   } catch (err) {
-    console.warn(`  ⚠ Failed to download image: ${err}`);
+    console.warn(`  ⚠ Failed to download media: ${err}`);
     return "";
   }
 }
@@ -241,23 +241,39 @@ async function main() {
             headline = post.content.media.title;
           }
 
-          // Detect media type and download images
+          // Detect media type and download images/videos
           if (post.content?.media?.id) {
-            // Documents have URNs like urn:li:document:..., images like urn:li:image:...
-            if (post.content.media.id.includes(":document:")) {
+            const mediaId = post.content.media.id;
+            if (mediaId.includes(":document:")) {
               if (mediaType === "unknown") mediaType = "document";
+            } else if (mediaId.includes(":video:")) {
+              if (mediaType === "unknown") mediaType = "video";
+              // Download video file
+              try {
+                const videoData = await client.getVideo(mediaId);
+                if (videoData?.downloadUrl) {
+                  const hash = mediaId.replace(/[^a-zA-Z0-9]/g, "_");
+                  mediaPath = await downloadMedia(videoData.downloadUrl, `${hash}.mp4`);
+                  console.log(`    ✓ Downloaded video for creative ${rc.id}`);
+                }
+              } catch (err) {
+                console.warn(`    ⚠ Could not download video for creative ${rc.id}: ${err}`);
+              }
             } else {
               if (mediaType === "unknown") mediaType = "image";
             }
-            try {
-              const images = await client.getImages([post.content.media.id]);
-              const imageData = Object.values(images.results)[0];
-              if (imageData?.downloadUrl) {
-                const hash = post.content.media.id.replace(/[^a-zA-Z0-9]/g, "_");
-                mediaPath = await downloadImage(imageData.downloadUrl, `${hash}.jpg`);
+            // Download image (for non-video media)
+            if (mediaType !== "video" || !mediaPath) {
+              try {
+                const images = await client.getImages([mediaId]);
+                const imageData = Object.values(images.results)[0];
+                if (imageData?.downloadUrl) {
+                  const hash = mediaId.replace(/[^a-zA-Z0-9]/g, "_");
+                  mediaPath = await downloadMedia(imageData.downloadUrl, `${hash}.jpg`);
+                }
+              } catch {
+                console.warn(`    ⚠ Could not download image for creative ${rc.id}`);
               }
-            } catch {
-              console.warn(`    ⚠ Could not download image for creative ${rc.id}`);
             }
           } else if (post.content?.multiImage) {
             mediaType = "carousel";

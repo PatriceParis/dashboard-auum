@@ -1,4 +1,5 @@
 import type { Creative } from "@/lib/types";
+import { parseLinkedInText } from "@/lib/utils";
 import { FileText, Globe, MoreHorizontal, Image, Video, Play } from "lucide-react";
 
 interface Props {
@@ -18,7 +19,7 @@ export function CreativeCard({ creative, campaignName }: Props) {
   const badge = MEDIA_BADGE[creative.mediaType];
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden bg-card flex flex-col">
+    <div className="border border-border rounded-lg overflow-hidden bg-card flex flex-col h-full">
       {/* Campaign name + media type badge */}
       <div className="px-3 py-2 flex items-center justify-between gap-2 bg-muted/30 border-b border-border">
         <span className="text-xs text-muted-foreground truncate">
@@ -48,28 +49,33 @@ export function CreativeCard({ creative, campaignName }: Props) {
       </div>
 
       {/* Ad Text */}
-      <div className="px-3 pb-3">
+      <div className="px-3 pb-3 max-h-[120px] overflow-y-auto">
         <p className="text-sm whitespace-pre-line leading-relaxed">
-          {creative.adText}
+          {parseLinkedInText(creative.adText)}
         </p>
       </div>
 
       {/* Media area */}
-      <div className="bg-muted border-t border-b border-border">
-        {creative.localMediaPath ? (
-          <div className="relative">
+      <div className="bg-muted border-t border-b border-border flex-shrink-0">
+        {creative.localMediaPath && creative.mediaType === "video" ? (
+          <div className="relative aspect-[16/9] overflow-hidden bg-black">
+            <video
+              src={creative.localMediaPath}
+              controls
+              preload="metadata"
+              className="w-full h-full object-contain"
+              poster=""
+            >
+              Votre navigateur ne supporte pas la lecture vidéo.
+            </video>
+          </div>
+        ) : creative.localMediaPath ? (
+          <div className="relative aspect-[16/9] overflow-hidden">
             <img
               src={creative.localMediaPath}
               alt={creative.headline || creative.name}
-              className="w-full"
+              className="w-full h-full object-cover"
             />
-            {creative.mediaType === "video" && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-14 h-14 rounded-full bg-black/60 flex items-center justify-center">
-                  <Play className="w-6 h-6 text-white ml-1" />
-                </div>
-              </div>
-            )}
           </div>
         ) : (
           <div className="aspect-[16/9] flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">

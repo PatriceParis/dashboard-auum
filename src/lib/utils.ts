@@ -37,3 +37,17 @@ export function formatKPI(value: number, format: string): string {
       return String(value);
   }
 }
+
+/**
+ * Parse LinkedIn API raw text formatting into human-readable text.
+ * - Mentions: @[Name](urn:li:organization:123) → @Name
+ * - Hashtags: {hashtag|\#|tag} → #tag
+ */
+export function parseLinkedInText(text: string): string {
+  if (!text) return text;
+  return text
+    // @[auum](urn:li:organization:18897201) → @auum
+    .replace(/@\[([^\]]+)\]\([^)]+\)/g, "@$1")
+    // {hashtag|\#|réemploi} → #réemploi
+    .replace(/\{hashtag\|\\#\|([^}]+)\}/g, "#$1");
+}
