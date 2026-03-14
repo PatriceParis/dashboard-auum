@@ -10,9 +10,9 @@ export const REGION_LABELS: Record<Region, string> = {
 };
 
 export const REGION_KEYWORDS: Record<Exclude<Region, "Global">, string[]> = {
-  FR: ["france", "fr", "french"],
+  FR: ["france", "french"],
   UK: ["uk", "united kingdom", "britain", "gb", "english"],
-  DACH: ["dach", "germany", "de", "austria", "at", "switzerland", "ch", "german", "deutsch"],
+  DACH: ["dach", "germany", "austria", "switzerland", "german", "deutsch"],
 };
 
 export const GEO_URN_TO_REGION: Record<string, Region> = {

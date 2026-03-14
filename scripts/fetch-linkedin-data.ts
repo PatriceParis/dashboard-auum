@@ -20,7 +20,11 @@ function writeJSON(filename: string, data: unknown) {
 function detectRegion(groupName: string): Region {
   const lower = groupName.toLowerCase();
   for (const [region, keywords] of Object.entries(REGION_KEYWORDS)) {
-    if (keywords.some((kw) => lower.includes(kw))) {
+    if (keywords.some((kw) => {
+      // Match as whole word to avoid false positives
+      const regex = new RegExp(`\\b${kw}\\b`, "i");
+      return regex.test(lower);
+    })) {
       return region as Region;
     }
   }
@@ -157,24 +161,28 @@ async function main() {
   console.log("5. Fetching daily analytics (last 30 days)...");
   const dailyResults: DailyAnalytics[] = [];
   try {
-    const allUrns = campaignUrns.slice(0, 20); // First batch for daily
-    const dailyData = await client.getDailyAnalytics(allUrns, 30);
     const dailyMap = new Map<string, DailyAnalytics>();
 
-    if (dailyData.elements.length > 0) {
-      console.log(`  Daily analytics keys: ${Object.keys(dailyData.elements[0]).join(", ")}`);
-    }
-    for (const el of dailyData.elements) {
-      if (!el.dateRange?.start) continue; // Skip if no date info
-      const d = el.dateRange.start;
-      const dateKey = `${d.year}-${String(d.month).padStart(2, "0")}-${String(d.day).padStart(2, "0")}`;
-      const pivotCampaignId = stripUrn(String((el as any).pivotValues?.[0] || (el as any).pivotValue || ""));
-      const mapKey = `${dateKey}_${pivotCampaignId}`;
-      const existing = dailyMap.get(mapKey) || { date: dateKey, campaignId: pivotCampaignId, impressions: 0, clicks: 0, costInLocalCurrency: 0 };
-      existing.impressions += el.impressions || 0;
-      existing.clicks += el.clicks || 0;
-      existing.costInLocalCurrency += parseFloat(String(el.costInLocalCurrency)) || 0;
-      dailyMap.set(mapKey, existing);
+    // Batch all campaigns in groups of 20
+    for (let i = 0; i < campaignUrns.length; i += 20) {
+      const batch = campaignUrns.slice(i, i + 20);
+      const dailyData = await client.getDailyAnalytics(batch, 30);
+
+      if (i === 0 && dailyData.elements.length > 0) {
+        console.log(`  Daily analytics keys: ${Object.keys(dailyData.elements[0]).join(", ")}`);
+      }
+      for (const el of dailyData.elements) {
+        if (!el.dateRange?.start) continue;
+        const d = el.dateRange.start;
+        const dateKey = `${d.year}-${String(d.month).padStart(2, "0")}-${String(d.day).padStart(2, "0")}`;
+        const pivotCampaignId = stripUrn(String((el as any).pivotValues?.[0] || (el as any).pivotValue || ""));
+        const mapKey = `${dateKey}_${pivotCampaignId}`;
+        const existing = dailyMap.get(mapKey) || { date: dateKey, campaignId: pivotCampaignId, impressions: 0, clicks: 0, costInLocalCurrency: 0 };
+        existing.impressions += el.impressions || 0;
+        existing.clicks += el.clicks || 0;
+        existing.costInLocalCurrency += parseFloat(String(el.costInLocalCurrency)) || 0;
+        dailyMap.set(mapKey, existing);
+      }
     }
 
     dailyResults.push(...Array.from(dailyMap.values()).sort((a, b) => a.date.localeCompare(b.date)));

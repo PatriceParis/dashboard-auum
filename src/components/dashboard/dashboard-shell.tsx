@@ -87,7 +87,7 @@ export function DashboardShell({ data }: Props) {
             <h1 className="text-2xl font-bold text-foreground">
               LinkedIn Ads Dashboard
             </h1>
-            <p className="text-sm text-muted-foreground">Cybervadis &lt;&gt; Hirondo</p>
+            <p className="text-sm text-muted-foreground">Auum</p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
