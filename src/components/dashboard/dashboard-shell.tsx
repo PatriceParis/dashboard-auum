@@ -52,6 +52,7 @@ export function DashboardShell({ data }: Props) {
       existing.impressions += d.impressions;
       existing.clicks += d.clicks;
       existing.costInLocalCurrency += d.costInLocalCurrency;
+      existing.externalWebsiteConversions += d.leads || 0;
       analyticsMap.set(d.campaignId, existing);
     }
 

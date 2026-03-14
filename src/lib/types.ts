@@ -39,6 +39,7 @@ export interface DailyAnalytics {
   impressions: number;
   clicks: number;
   costInLocalCurrency: number;
+  leads: number;
 }
 
 export interface Creative {

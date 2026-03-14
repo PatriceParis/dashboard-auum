@@ -163,12 +163,13 @@ export class LinkedInAPIClient {
       impressions: number;
       clicks: number;
       costInLocalCurrency: string;
+      oneClickLeads: number;
       externalWebsiteConversions: number;
       landingPageClicks: number;
       pivotValues?: string[];
       pivotValue?: string;
       dateRange?: { start: { year: number; month: number; day: number }; end: { year: number; month: number; day: number } };
-    }> }>(`/rest/adAnalytics?q=analytics&pivot=CAMPAIGN&timeGranularity=ALL&dateRange=${dateRange}&campaigns=List(${campaignsList})&fields=impressions,clicks,costInLocalCurrency,externalWebsiteConversions,landingPageClicks,pivotValues,dateRange`);
+    }> }>(`/rest/adAnalytics?q=analytics&pivot=CAMPAIGN&timeGranularity=ALL&dateRange=${dateRange}&campaigns=List(${campaignsList})&fields=impressions,clicks,costInLocalCurrency,oneClickLeads,externalWebsiteConversions,landingPageClicks,pivotValues,dateRange`);
   }
 
   // ── Daily Analytics ──
@@ -182,11 +183,12 @@ export class LinkedInAPIClient {
       impressions: number;
       clicks: number;
       costInLocalCurrency: string;
+      oneClickLeads: number;
       externalWebsiteConversions: number;
       pivotValues?: string[];
       pivotValue?: string;
       dateRange?: { start: { year: number; month: number; day: number }; end: { year: number; month: number; day: number } };
-    }> }>(`/rest/adAnalytics?q=analytics&pivot=CAMPAIGN&timeGranularity=DAILY&dateRange=${dateRange}&campaigns=List(${campaignsList})&fields=impressions,clicks,costInLocalCurrency,externalWebsiteConversions,pivotValues,dateRange`);
+    }> }>(`/rest/adAnalytics?q=analytics&pivot=CAMPAIGN&timeGranularity=DAILY&dateRange=${dateRange}&campaigns=List(${campaignsList})&fields=impressions,clicks,costInLocalCurrency,oneClickLeads,externalWebsiteConversions,pivotValues,dateRange`);
   }
 
   // ── Creatives (uses legacy v2 API as /rest/ endpoint doesn't support creatives) ──

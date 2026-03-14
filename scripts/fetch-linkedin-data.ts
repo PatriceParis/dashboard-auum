@@ -145,7 +145,7 @@ async function main() {
           impressions: el.impressions || 0,
           clicks: el.clicks || 0,
           costInLocalCurrency: parseFloat(String(el.costInLocalCurrency)) || 0,
-          externalWebsiteConversions: el.externalWebsiteConversions || 0,
+          externalWebsiteConversions: el.oneClickLeads || el.externalWebsiteConversions || 0,
           landingPageClicks: el.landingPageClicks || 0,
           dateRange: el.dateRange,
         });
@@ -177,10 +177,11 @@ async function main() {
         const dateKey = `${d.year}-${String(d.month).padStart(2, "0")}-${String(d.day).padStart(2, "0")}`;
         const pivotCampaignId = stripUrn(String((el as any).pivotValues?.[0] || (el as any).pivotValue || ""));
         const mapKey = `${dateKey}_${pivotCampaignId}`;
-        const existing = dailyMap.get(mapKey) || { date: dateKey, campaignId: pivotCampaignId, impressions: 0, clicks: 0, costInLocalCurrency: 0 };
+        const existing = dailyMap.get(mapKey) || { date: dateKey, campaignId: pivotCampaignId, impressions: 0, clicks: 0, costInLocalCurrency: 0, leads: 0 };
         existing.impressions += el.impressions || 0;
         existing.clicks += el.clicks || 0;
         existing.costInLocalCurrency += parseFloat(String(el.costInLocalCurrency)) || 0;
+        existing.leads += (el as any).oneClickLeads || (el as any).externalWebsiteConversions || 0;
         dailyMap.set(mapKey, existing);
       }
     }
