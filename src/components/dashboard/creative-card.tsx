@@ -49,7 +49,7 @@ export function CreativeCard({ creative, campaignName }: Props) {
 
       {/* Ad Text */}
       <div className="px-3 pb-3">
-        <p className="text-sm whitespace-pre-line leading-relaxed line-clamp-4">
+        <p className="text-sm whitespace-pre-line leading-relaxed">
           {creative.adText}
         </p>
       </div>

@@ -57,8 +57,8 @@ export function CampaignTable({ campaigns, analytics }: Props) {
     return [...rows].sort((a, b) => {
       let va: number | string, vb: number | string;
       if (sortKey === "name") {
-        va = (a.campaign.campaignGroupName || a.campaign.name).toLowerCase();
-        vb = (b.campaign.campaignGroupName || b.campaign.name).toLowerCase();
+        va = a.campaign.name.toLowerCase();
+        vb = b.campaign.name.toLowerCase();
       } else {
         va = a[sortKey];
         vb = b[sortKey];
@@ -142,7 +142,7 @@ export function CampaignTable({ campaigns, analytics }: Props) {
               className="border-b border-border/50 hover:bg-muted/50 transition-colors"
             >
               <td className="py-3 px-3 font-medium">
-                {row.campaign.campaignGroupName || row.campaign.name}
+                {row.campaign.name}
               </td>
               <td className="py-3 px-3">
                 <span
