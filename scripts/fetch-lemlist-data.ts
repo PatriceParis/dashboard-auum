@@ -62,10 +62,16 @@ async function main() {
   campaigns.forEach((c) => console.log(`    - ${c.name} [${c.labels.join(", ")}]`));
   writeJSON("lemlist-campaigns.json", campaigns);
 
-  // 2. Fetch activities per campaign
+  // 2. Fetch activities per campaign + extract ABX status from lead variables
   console.log("\n2. Fetching activities per campaign...");
   const campaignStats: LemlistCampaignStats[] = [];
   const dailyMap = new Map<string, LemlistDailyActivity>();
+
+  // Track unique leads for ABX status (keyed by contactId to avoid duplicates)
+  const abxByContact = new Map<string, string>(); // contactId → ABX status value
+
+  // Possible field names for "ABX Statut du lead" in activity variables
+  const ABX_FIELD_PATTERNS = ["abx", "statut du lead"];
 
   for (const campaign of campaigns) {
     console.log(`\n  Campaign: ${campaign.name}`);
@@ -90,7 +96,7 @@ async function main() {
       stats[field] = activities.length;
       console.log(`    ${type}: ${activities.length}`);
 
-      // Aggregate daily counts
+      // Aggregate daily counts + extract ABX status from activity variables
       for (const act of activities) {
         if (!act.createdAt) continue;
         const date = act.createdAt.substring(0, 10); // YYYY-MM-DD
@@ -110,11 +116,26 @@ async function main() {
         };
         (existing as any)[field] += 1;
         dailyMap.set(key, existing);
+
+        // Extract ABX status from activity (activities include lead variables as top-level fields)
+        const contactId = act.contactId;
+        if (contactId && !abxByContact.has(contactId)) {
+          for (const [actKey, actValue] of Object.entries(act)) {
+            const keyLower = actKey.toLowerCase();
+            if (ABX_FIELD_PATTERNS.some((p) => keyLower.includes(p)) && typeof actValue === "string" && actValue.trim()) {
+              abxByContact.set(contactId, actValue.trim().toLowerCase());
+              break;
+            }
+          }
+          // Mark contact as seen even without ABX field (to count total)
+          if (!abxByContact.has(contactId)) {
+            abxByContact.set(contactId, "");
+          }
+        }
       }
     }
 
     // Count interested leads via replied activities flagged as interested
-    // (interested = replied leads that were marked as interested)
     try {
       const interestedActivities = await client.getAllActivities(campaign.id, "emailsInterested");
       stats.interested = interestedActivities.length;
@@ -134,51 +155,14 @@ async function main() {
   );
   writeJSON("lemlist-daily-activities.json", dailyActivities);
 
-  // 3. Fetch ABX status from contacts
-  console.log("\n3. Fetching ABX Statut du lead from contacts...");
-  const abxStats: AbxStats = { total: 0, mql: 0, sql: 0, deal: 0 };
-  const seenContactIds = new Set<string>();
-
-  // Possible field names for "ABX Statut du lead"
-  const ABX_FIELD_PATTERNS = ["abx", "statut"];
-
-  for (const campaign of campaigns) {
-    const leads = await client.getLeads(campaign.id);
-    for (const lead of leads) {
-      if (seenContactIds.has(lead.contactId)) continue;
-      seenContactIds.add(lead.contactId);
-    }
+  // 3. Compute ABX stats from collected lead variables
+  console.log("\n3. Computing ABX Statut du lead...");
+  const abxStats: AbxStats = { total: abxByContact.size, mql: 0, sql: 0, deal: 0 };
+  for (const status of abxByContact.values()) {
+    if (status === "mql") abxStats.mql++;
+    else if (status === "sql") abxStats.sql++;
+    else if (status === "deal") abxStats.deal++;
   }
-
-  console.log(`  Unique contacts across all campaigns: ${seenContactIds.size}`);
-  abxStats.total = seenContactIds.size;
-
-  // Fetch contacts in batches to check for ABX field
-  let checked = 0;
-  for (const contactId of seenContactIds) {
-    try {
-      const contact = await client.getContact(contactId);
-      checked++;
-      if (checked % 100 === 0) {
-        console.log(`    Checked ${checked}/${seenContactIds.size} contacts...`);
-      }
-
-      const fields = contact.fields || {};
-      // Find the ABX field: look for any field key containing "abx" or "statut"
-      for (const [key, value] of Object.entries(fields)) {
-        const keyLower = key.toLowerCase();
-        if (ABX_FIELD_PATTERNS.some((p) => keyLower.includes(p)) && typeof value === "string") {
-          const valLower = value.toLowerCase().trim();
-          if (valLower === "mql") abxStats.mql++;
-          else if (valLower === "sql") abxStats.sql++;
-          else if (valLower === "deal") abxStats.deal++;
-        }
-      }
-    } catch {
-      // Skip contacts that can't be fetched
-    }
-  }
-
   console.log(`  ABX Stats: total=${abxStats.total}, MQL=${abxStats.mql}, SQL=${abxStats.sql}, Deal=${abxStats.deal}`);
   writeJSON("lemlist-abx-stats.json", abxStats);
 
