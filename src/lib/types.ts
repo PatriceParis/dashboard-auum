@@ -63,6 +63,7 @@ export interface DashboardData {
   creatives: Creative[];
   lastUpdated: string;
   dataPeriod?: { start: string; end: string };
+  lemlist?: LemlistData;
 }
 
 export interface ComputedKPIs {
@@ -73,4 +74,51 @@ export interface ComputedKPIs {
   clicks: number;
   cpl: number;
   leads: number;
+}
+
+// ── Lemlist Outbound ──
+
+export interface LemlistCampaign {
+  id: string;
+  name: string;
+  status: string;
+  labels: string[];
+  createdAt: string;
+}
+
+export interface LemlistCampaignStats {
+  campaignId: string;
+  campaignName: string;
+  sent: number;
+  opened: number;
+  clicked: number;
+  replied: number;
+  bounced: number;
+  interested: number;
+}
+
+export interface LemlistDailyActivity {
+  date: string; // YYYY-MM-DD
+  campaignId: string;
+  sent: number;
+  opened: number;
+  clicked: number;
+  replied: number;
+  bounced: number;
+}
+
+export interface LemlistData {
+  campaigns: LemlistCampaign[];
+  campaignStats: LemlistCampaignStats[];
+  dailyActivities: LemlistDailyActivity[];
+  lastUpdated: string;
+}
+
+export interface OutboundKPIs {
+  emailsSent: number;
+  openRate: number;
+  clickRate: number;
+  replyRate: number;
+  bounceRate: number;
+  interested: number;
 }

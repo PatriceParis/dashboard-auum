@@ -3,8 +3,9 @@
 import { useState, useMemo } from "react";
 import type { DashboardData } from "@/lib/types";
 import { RegionTab } from "./region-tab";
+import { OutboundSection } from "./outbound-section";
 import { DateSelector } from "./date-selector";
-import { Clock, BarChart3 } from "lucide-react";
+import { Clock, BarChart3, Megaphone, Send } from "lucide-react";
 
 interface Props {
   data: DashboardData;
@@ -67,12 +68,22 @@ export function DashboardShell({ data }: Props) {
     };
   }, [data, startDate, endDate]);
 
+  // Filter lemlist daily activities by date range
+  const filteredLemlistDaily = useMemo(() => {
+    if (!data.lemlist) return [];
+    return data.lemlist.dailyActivities.filter(
+      (d) => d.date >= startDate && d.date <= endDate
+    );
+  }, [data.lemlist, startDate, endDate]);
+
   const lastUpdated = data.lastUpdated
     ? new Date(data.lastUpdated).toLocaleString("fr-FR", {
         dateStyle: "medium",
         timeStyle: "short",
       })
     : "N/A";
+
+  const hasLemlist = data.lemlist && data.lemlist.campaigns.length > 0;
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -84,7 +95,7 @@ export function DashboardShell({ data }: Props) {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              LinkedIn Ads Dashboard
+              Dashboard Marketing
             </h1>
             <p className="text-sm text-muted-foreground">Auum &lt;&gt; Bulldozer Collective</p>
           </div>
@@ -103,8 +114,28 @@ export function DashboardShell({ data }: Props) {
         </div>
       </div>
 
-      {/* Content */}
-      <RegionTab data={filteredData} region="Global" />
+      {/* Section: Paid (LinkedIn Ads) */}
+      <div className="mb-10">
+        <div className="flex items-center gap-2 mb-6">
+          <Megaphone className="w-5 h-5 text-blue-600" />
+          <h2 className="text-lg font-bold text-foreground">Paid (LinkedIn Ads)</h2>
+        </div>
+        <RegionTab data={filteredData} region="Global" />
+      </div>
+
+      {/* Section: Outbound (Lemlist) */}
+      {hasLemlist && (
+        <div>
+          <div className="flex items-center gap-2 mb-6">
+            <Send className="w-5 h-5 text-purple-600" />
+            <h2 className="text-lg font-bold text-foreground">Outbound (Lemlist)</h2>
+          </div>
+          <OutboundSection
+            data={data.lemlist!}
+            filteredDailyActivities={filteredLemlistDaily}
+          />
+        </div>
+      )}
     </div>
   );
 }

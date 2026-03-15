@@ -34,5 +34,11 @@ export function loadDashboardData(): DashboardData {
     ),
     lastUpdated: meta.timestamp,
     dataPeriod: meta.period,
+    lemlist: {
+      campaigns: readJSON("lemlist-campaigns.json", []),
+      campaignStats: readJSON("lemlist-campaign-stats.json", []),
+      dailyActivities: readJSON("lemlist-daily-activities.json", []),
+      lastUpdated: readJSON("lemlist-last-updated.json", { timestamp: "" } as any).timestamp,
+    },
   };
 }

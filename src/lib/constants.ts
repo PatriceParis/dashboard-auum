@@ -32,3 +32,12 @@ export const KPI_CONFIG = [
   { key: "cpl", label: "CPL", format: "currency" },
   { key: "leads", label: "Leads", format: "number" },
 ] as const;
+
+export const OUTBOUND_KPI_CONFIG = [
+  { key: "emailsSent", label: "Emails envoyés", format: "number" },
+  { key: "openRate", label: "Taux d'ouverture", format: "percent" },
+  { key: "clickRate", label: "Taux de clic", format: "percent" },
+  { key: "replyRate", label: "Taux de réponse", format: "percent" },
+  { key: "bounceRate", label: "Taux de rebond", format: "percent" },
+  { key: "interested", label: "Intéressés", format: "number" },
+] as const;

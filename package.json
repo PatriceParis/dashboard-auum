@@ -9,7 +9,8 @@
     "start": "npx serve out",
     "auth": "npx tsx scripts/auth/get-token.ts",
     "refresh-token": "npx tsx scripts/auth/refresh-token.ts",
-    "fetch-data": "npx tsx scripts/fetch-linkedin-data.ts",
+    "fetch-data": "npx tsx scripts/fetch-linkedin-data.ts && npx tsx scripts/fetch-lemlist-data.ts",
+    "fetch-lemlist": "npx tsx scripts/fetch-lemlist-data.ts",
     "update": "npm run fetch-data && npm run build"
   },
   "dependencies": {
