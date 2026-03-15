@@ -6,11 +6,12 @@ interface Props {
   value: number;
   format: string;
   icon: ReactNode;
+  accentColor?: string;
 }
 
-export function KPICard({ label, value, format, icon }: Props) {
+export function KPICard({ label, value, format, icon, accentColor }: Props) {
   return (
-    <div className="bg-card rounded-xl border border-border p-5 flex flex-col gap-2">
+    <div className={`bg-card rounded-xl border border-border p-5 flex flex-col gap-2 ${accentColor ? `border-t-2 ${accentColor}` : ""}`}>
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-muted-foreground">
           {label}

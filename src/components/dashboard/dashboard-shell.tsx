@@ -115,10 +115,15 @@ export function DashboardShell({ data }: Props) {
       </div>
 
       {/* Section: Paid (LinkedIn Ads) */}
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-6">
-          <Megaphone className="w-5 h-5 text-blue-600" />
-          <h2 className="text-lg font-bold text-foreground">Paid (LinkedIn Ads)</h2>
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-6 pb-3 border-b-2 border-blue-200">
+          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+            <Megaphone className="w-4.5 h-4.5 text-blue-600" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Paid (LinkedIn Ads)</h2>
+            <p className="text-xs text-muted-foreground">Campagnes sponsorisées LinkedIn avec budget publicitaire</p>
+          </div>
         </div>
         <RegionTab data={filteredData} region="Global" />
       </div>
@@ -126,9 +131,14 @@ export function DashboardShell({ data }: Props) {
       {/* Section: Outbound (Lemlist) */}
       {hasLemlist && (
         <div>
-          <div className="flex items-center gap-2 mb-6">
-            <Send className="w-5 h-5 text-purple-600" />
-            <h2 className="text-lg font-bold text-foreground">Outbound (Lemlist)</h2>
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b-2 border-purple-200">
+            <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+              <Send className="w-4.5 h-4.5 text-purple-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Outbound (Lemlist)</h2>
+              <p className="text-xs text-muted-foreground">Prospection email &amp; LinkedIn sans budget publicitaire</p>
+            </div>
           </div>
           <OutboundSection
             data={data.lemlist!}

@@ -25,6 +25,19 @@ const OUTBOUND_ICONS: Record<string, React.ReactNode> = {
   liReplied: <MessageCircle className="w-5 h-5" />,
 };
 
+// Accent color per KPI key
+const ACCENT_COLORS: Record<string, string> = {
+  totalContacted: "border-t-purple-400",
+  totalReplies: "border-t-purple-400",
+  interested: "border-t-purple-400",
+  emailsSent: "border-t-orange-400",
+  emailOpenRate: "border-t-orange-400",
+  emailReplyRate: "border-t-orange-400",
+  liInvites: "border-t-sky-500",
+  liAcceptRate: "border-t-sky-500",
+  liReplied: "border-t-sky-500",
+};
+
 interface Props {
   kpis: OutboundKPIs;
 }
@@ -41,10 +54,11 @@ export function OutboundKPIGrid({ kpis }: Props) {
             value={kpis[key as keyof OutboundKPIs]}
             format={format}
             icon={OUTBOUND_ICONS[key]}
+            accentColor={ACCENT_COLORS[key]}
           />
         ))}
       </div>
-      {/* Channel-specific KPIs */}
+      {/* Channel-specific KPIs: Email | LinkedIn */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {OUTBOUND_KPI_CONFIG.slice(3).map(({ key, label, format }) => (
           <KPICard
@@ -53,6 +67,7 @@ export function OutboundKPIGrid({ kpis }: Props) {
             value={kpis[key as keyof OutboundKPIs]}
             format={format}
             icon={OUTBOUND_ICONS[key]}
+            accentColor={ACCENT_COLORS[key]}
           />
         ))}
       </div>

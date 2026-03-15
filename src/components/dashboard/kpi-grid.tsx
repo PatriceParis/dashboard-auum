@@ -35,6 +35,7 @@ export function KPIGrid({ kpis }: Props) {
           value={kpis[key as keyof ComputedKPIs]}
           format={format}
           icon={KPI_ICONS[key]}
+          accentColor="border-t-blue-400"
         />
       ))}
     </div>
