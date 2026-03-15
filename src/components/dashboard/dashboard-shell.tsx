@@ -17,15 +17,16 @@ export function DashboardShell({ data }: Props) {
 
   const [activeTab, setActiveTab] = useState<Tab>("paid");
 
-  // Date range state
-  const defaultStart = data.dataPeriod?.start ??
-    (data.dailyAnalytics.length > 0
-      ? data.dailyAnalytics.reduce((min, d) => d.date < min ? d.date : min, data.dailyAnalytics[0].date)
-      : "2026-03-06");
-  const defaultEnd = data.dataPeriod?.end ??
+  // Date range state — default to last 60 days
+  const dataEnd = data.dataPeriod?.end ??
     (data.dailyAnalytics.length > 0
       ? data.dailyAnalytics.reduce((max, d) => d.date > max ? d.date : max, data.dailyAnalytics[0].date)
-      : "2026-03-12");
+      : new Date().toISOString().slice(0, 10));
+
+  const sixtyDaysAgo = new Date(dataEnd);
+  sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+  const defaultStart = sixtyDaysAgo.toISOString().slice(0, 10);
+  const defaultEnd = dataEnd;
 
   const [startDate, setStartDate] = useState(defaultStart);
   const [endDate, setEndDate] = useState(defaultEnd);
