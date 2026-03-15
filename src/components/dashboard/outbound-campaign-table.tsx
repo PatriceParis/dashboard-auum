@@ -10,7 +10,7 @@ interface Props {
   stats: LemlistCampaignStats[];
 }
 
-type SortKey = "name" | "sent" | "opened" | "openRate" | "clicked" | "replied" | "replyRate" | "bounced" | "interested" | "liInvites" | "liAccepted" | "liAcceptRate" | "liReplied";
+type SortKey = "name" | "sent" | "opened" | "openRate" | "clicked" | "replied" | "replyRate" | "bounced" | "liInvites" | "liAccepted" | "liAcceptRate" | "liReplied";
 
 interface Row {
   campaign: LemlistCampaign;
@@ -96,7 +96,6 @@ export function OutboundCampaignTable({ campaigns, stats }: Props) {
     { key: "liAccepted", label: "Acceptées", group: "linkedin" },
     { key: "liAcceptRate", label: "Taux acc.", group: "linkedin" },
     { key: "liReplied", label: "Rép. LI", group: "linkedin" },
-    { key: "interested", label: "Intéressés" },
   ];
 
   return (
@@ -154,7 +153,6 @@ export function OutboundCampaignTable({ campaigns, stats }: Props) {
               <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.liAccepted)}</td>
               <td className="py-3 px-3 text-right tabular-nums">{formatPercent(row.liAcceptRate)}</td>
               <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.liReplied)}</td>
-              <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.interested)}</td>
             </tr>
           ))}
         </tbody>

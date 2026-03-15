@@ -119,10 +119,18 @@ export interface LemlistDailyActivity {
   liReplied: number;
 }
 
+export interface AbxStats {
+  total: number;
+  mql: number;
+  sql: number;
+  deal: number;
+}
+
 export interface LemlistData {
   campaigns: LemlistCampaign[];
   campaignStats: LemlistCampaignStats[];
   dailyActivities: LemlistDailyActivity[];
+  abxStats: AbxStats;
   lastUpdated: string;
 }
 
@@ -130,7 +138,10 @@ export interface OutboundKPIs {
   // Cross-channel
   totalContacted: number;
   totalReplies: number;
-  interested: number;
+  // ABX funnel
+  mqlRate: number;
+  sqlRate: number;
+  dealRate: number;
   // Email
   emailsSent: number;
   emailOpenRate: number;

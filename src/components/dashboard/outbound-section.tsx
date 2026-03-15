@@ -47,7 +47,7 @@ export function OutboundSection({ data, filteredDailyActivities }: Props) {
     });
   }, [data, filteredDailyActivities]);
 
-  const kpis = computeOutboundKPIs(filteredStats);
+  const kpis = computeOutboundKPIs(filteredStats, data.abxStats);
 
   return (
     <div className="space-y-6">

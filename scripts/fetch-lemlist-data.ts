@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { LemlistAPIClient } from "./lemlist-api-client";
-import type { LemlistCampaign, LemlistCampaignStats, LemlistDailyActivity } from "../src/lib/types";
+import type { LemlistCampaign, LemlistCampaignStats, LemlistDailyActivity, AbxStats } from "../src/lib/types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 
@@ -134,13 +134,61 @@ async function main() {
   );
   writeJSON("lemlist-daily-activities.json", dailyActivities);
 
-  // 3. Summary
+  // 3. Fetch ABX status from contacts
+  console.log("\n3. Fetching ABX Statut du lead from contacts...");
+  const abxStats: AbxStats = { total: 0, mql: 0, sql: 0, deal: 0 };
+  const seenContactIds = new Set<string>();
+
+  // Possible field names for "ABX Statut du lead"
+  const ABX_FIELD_PATTERNS = ["abx", "statut"];
+
+  for (const campaign of campaigns) {
+    const leads = await client.getLeads(campaign.id);
+    for (const lead of leads) {
+      if (seenContactIds.has(lead.contactId)) continue;
+      seenContactIds.add(lead.contactId);
+    }
+  }
+
+  console.log(`  Unique contacts across all campaigns: ${seenContactIds.size}`);
+  abxStats.total = seenContactIds.size;
+
+  // Fetch contacts in batches to check for ABX field
+  let checked = 0;
+  for (const contactId of seenContactIds) {
+    try {
+      const contact = await client.getContact(contactId);
+      checked++;
+      if (checked % 100 === 0) {
+        console.log(`    Checked ${checked}/${seenContactIds.size} contacts...`);
+      }
+
+      const fields = contact.fields || {};
+      // Find the ABX field: look for any field key containing "abx" or "statut"
+      for (const [key, value] of Object.entries(fields)) {
+        const keyLower = key.toLowerCase();
+        if (ABX_FIELD_PATTERNS.some((p) => keyLower.includes(p)) && typeof value === "string") {
+          const valLower = value.toLowerCase().trim();
+          if (valLower === "mql") abxStats.mql++;
+          else if (valLower === "sql") abxStats.sql++;
+          else if (valLower === "deal") abxStats.deal++;
+        }
+      }
+    } catch {
+      // Skip contacts that can't be fetched
+    }
+  }
+
+  console.log(`  ABX Stats: total=${abxStats.total}, MQL=${abxStats.mql}, SQL=${abxStats.sql}, Deal=${abxStats.deal}`);
+  writeJSON("lemlist-abx-stats.json", abxStats);
+
+  // 4. Summary
   const totalSent = campaignStats.reduce((s, c) => s + c.sent, 0);
   const totalOpened = campaignStats.reduce((s, c) => s + c.opened, 0);
   const totalReplied = campaignStats.reduce((s, c) => s + c.replied, 0);
   console.log(`\n  Summary: ${totalSent} sent, ${totalOpened} opened, ${totalReplied} replied`);
 
-  // 4. Write timestamp
+  // 5. Write timestamp
   writeJSON("lemlist-last-updated.json", { timestamp: new Date().toISOString() });
 
   console.log("\n✓ Lemlist data fetch complete!\n");

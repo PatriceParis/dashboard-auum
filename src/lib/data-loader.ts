@@ -38,6 +38,7 @@ export function loadDashboardData(): DashboardData {
       campaigns: readJSON("lemlist-campaigns.json", []),
       campaignStats: readJSON("lemlist-campaign-stats.json", []),
       dailyActivities: readJSON("lemlist-daily-activities.json", []),
+      abxStats: readJSON("lemlist-abx-stats.json", { total: 0, mql: 0, sql: 0, deal: 0 }),
       lastUpdated: readJSON("lemlist-last-updated.json", { timestamp: "" } as any).timestamp,
     },
   };

@@ -36,7 +36,9 @@ export const KPI_CONFIG = [
 export const OUTBOUND_KPI_CONFIG = [
   { key: "totalContacted", label: "Contacts touchés", format: "number" },
   { key: "totalReplies", label: "Réponses totales", format: "number" },
-  { key: "interested", label: "Intéressés", format: "number" },
+  { key: "mqlRate", label: "MQL", format: "percent" },
+  { key: "sqlRate", label: "SQL", format: "percent" },
+  { key: "dealRate", label: "Deal", format: "percent" },
   { key: "emailsSent", label: "Emails envoyés", format: "number" },
   { key: "emailOpenRate", label: "Taux ouverture email", format: "percent" },
   { key: "emailReplyRate", label: "Taux réponse email", format: "percent" },

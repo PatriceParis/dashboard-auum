@@ -79,6 +79,37 @@ export class LemlistAPIClient {
     }
     return all;
   }
+
+  async getLeads(campaignId: string): Promise<Array<{
+    _id: string;
+    state: string;
+    contactId: string;
+  }>> {
+    const all: any[] = [];
+    let offset = 0;
+    const limit = 100;
+    while (true) {
+      await sleep(150);
+      const batch = await this.request<any[]>(
+        `/campaigns/${campaignId}/leads?limit=${limit}&offset=${offset}`
+      );
+      if (!batch || batch.length === 0) break;
+      all.push(...batch);
+      if (batch.length < limit) break;
+      offset += limit;
+    }
+    return all;
+  }
+
+  async getContact(contactId: string): Promise<{
+    _id: string;
+    fullName?: string;
+    email?: string;
+    fields?: Record<string, any>;
+  }> {
+    await sleep(100);
+    return this.request<any>(`/contacts/${contactId}`);
+  }
 }
 
 function sleep(ms: number) {

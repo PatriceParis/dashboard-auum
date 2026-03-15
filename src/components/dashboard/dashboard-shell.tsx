@@ -11,7 +11,11 @@ interface Props {
   data: DashboardData;
 }
 
+type Tab = "paid" | "outbound";
+
 export function DashboardShell({ data }: Props) {
+
+  const [activeTab, setActiveTab] = useState<Tab>("paid");
 
   // Date range state
   const defaultStart = data.dataPeriod?.start ??
@@ -88,14 +92,14 @@ export function DashboardShell({ data }: Props) {
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
             <BarChart3 className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              Dashboard Marketing
+              ABX Dashboard
             </h1>
             <p className="text-sm text-muted-foreground">Auum &lt;&gt; Bulldozer Collective</p>
           </div>
@@ -114,37 +118,44 @@ export function DashboardShell({ data }: Props) {
         </div>
       </div>
 
-      {/* Section: Paid (LinkedIn Ads) */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-6 pb-3 border-b-2 border-blue-200">
-          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-            <Megaphone className="w-4.5 h-4.5 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-foreground">Paid (LinkedIn Ads)</h2>
-            <p className="text-xs text-muted-foreground">Campagnes sponsorisées LinkedIn avec budget publicitaire</p>
-          </div>
-        </div>
-        <RegionTab data={filteredData} region="Global" />
+      {/* Tab navigation */}
+      <div className="flex border-b border-border mb-8">
+        <button
+          onClick={() => setActiveTab("paid")}
+          className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px ${
+            activeTab === "paid"
+              ? "border-blue-500 text-blue-600"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300"
+          }`}
+        >
+          <Megaphone className="w-4 h-4" />
+          LinkedIn Ads Dashboard
+        </button>
+        {hasLemlist && (
+          <button
+            onClick={() => setActiveTab("outbound")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px ${
+              activeTab === "outbound"
+                ? "border-purple-500 text-purple-600"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300"
+            }`}
+          >
+            <Send className="w-4 h-4" />
+            Outbound Dashboard
+          </button>
+        )}
       </div>
 
-      {/* Section: Outbound (Lemlist) */}
-      {hasLemlist && (
-        <div>
-          <div className="flex items-center gap-3 mb-6 pb-3 border-b-2 border-purple-200">
-            <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-              <Send className="w-4.5 h-4.5 text-purple-600" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-foreground">Outbound (Lemlist)</h2>
-              <p className="text-xs text-muted-foreground">Prospection email &amp; LinkedIn sans budget publicitaire</p>
-            </div>
-          </div>
-          <OutboundSection
-            data={data.lemlist!}
-            filteredDailyActivities={filteredLemlistDaily}
-          />
-        </div>
+      {/* Tab content */}
+      {activeTab === "paid" && (
+        <RegionTab data={filteredData} region="Global" />
+      )}
+
+      {activeTab === "outbound" && hasLemlist && (
+        <OutboundSection
+          data={data.lemlist!}
+          filteredDailyActivities={filteredLemlistDaily}
+        />
       )}
     </div>
   );
