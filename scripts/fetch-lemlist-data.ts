@@ -21,6 +21,10 @@ const ACTIVITY_TYPES = [
   "emailsClicked",
   "emailsReplied",
   "emailsBounced",
+  "linkedinInviteDone",
+  "linkedinInviteAccepted",
+  "linkedinSent",
+  "linkedinReplied",
 ] as const;
 
 // Map activity type → stats field
@@ -30,6 +34,10 @@ const TYPE_TO_FIELD: Record<string, keyof Omit<LemlistCampaignStats, "campaignId
   emailsClicked: "clicked",
   emailsReplied: "replied",
   emailsBounced: "bounced",
+  linkedinInviteDone: "liInvites",
+  linkedinInviteAccepted: "liAccepted",
+  linkedinSent: "liSent",
+  linkedinReplied: "liReplied",
 };
 
 async function main() {
@@ -70,6 +78,10 @@ async function main() {
       replied: 0,
       bounced: 0,
       interested: 0,
+      liInvites: 0,
+      liAccepted: 0,
+      liSent: 0,
+      liReplied: 0,
     };
 
     for (const type of ACTIVITY_TYPES) {
@@ -91,6 +103,10 @@ async function main() {
           clicked: 0,
           replied: 0,
           bounced: 0,
+          liInvites: 0,
+          liAccepted: 0,
+          liSent: 0,
+          liReplied: 0,
         };
         (existing as any)[field] += 1;
         dailyMap.set(key, existing);

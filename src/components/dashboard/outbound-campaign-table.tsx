@@ -10,13 +10,14 @@ interface Props {
   stats: LemlistCampaignStats[];
 }
 
-type SortKey = "name" | "sent" | "opened" | "openRate" | "clicked" | "replied" | "replyRate" | "bounced" | "interested";
+type SortKey = "name" | "sent" | "opened" | "openRate" | "clicked" | "replied" | "replyRate" | "bounced" | "interested" | "liInvites" | "liAccepted" | "liAcceptRate" | "liReplied";
 
 interface Row {
   campaign: LemlistCampaign;
   stats: LemlistCampaignStats;
   openRate: number;
   replyRate: number;
+  liAcceptRate: number;
 }
 
 export function OutboundCampaignTable({ campaigns, stats }: Props) {
@@ -34,12 +35,14 @@ export function OutboundCampaignTable({ campaigns, stats }: Props) {
       const s = statsMap.get(c.id) || {
         campaignId: c.id, campaignName: c.name,
         sent: 0, opened: 0, clicked: 0, replied: 0, bounced: 0, interested: 0,
+        liInvites: 0, liAccepted: 0, liSent: 0, liReplied: 0,
       };
       return {
         campaign: c,
         stats: s,
         openRate: s.sent > 0 ? (s.opened / s.sent) * 100 : 0,
         replyRate: s.sent > 0 ? (s.replied / s.sent) * 100 : 0,
+        liAcceptRate: s.liInvites > 0 ? (s.liAccepted / s.liInvites) * 100 : 0,
       };
     });
   }, [campaigns, statsMap]);
@@ -56,6 +59,9 @@ export function OutboundCampaignTable({ campaigns, stats }: Props) {
       } else if (sortKey === "replyRate") {
         va = a.replyRate;
         vb = b.replyRate;
+      } else if (sortKey === "liAcceptRate") {
+        va = a.liAcceptRate;
+        vb = b.liAcceptRate;
       } else {
         va = a.stats[sortKey as keyof LemlistCampaignStats] as number;
         vb = b.stats[sortKey as keyof LemlistCampaignStats] as number;
@@ -78,14 +84,18 @@ export function OutboundCampaignTable({ campaigns, stats }: Props) {
       <ArrowUpDown className="w-3.5 h-3.5 inline ml-1 opacity-30" />
     );
 
-  const columns: { key: SortKey; label: string }[] = [
-    { key: "sent", label: "Envoyés" },
-    { key: "opened", label: "Ouverts" },
-    { key: "openRate", label: "Taux ouv." },
-    { key: "clicked", label: "Clics" },
-    { key: "replied", label: "Réponses" },
-    { key: "replyRate", label: "Taux rép." },
-    { key: "bounced", label: "Rebonds" },
+  const columns: { key: SortKey; label: string; group?: string }[] = [
+    { key: "sent", label: "Envoyés", group: "email" },
+    { key: "opened", label: "Ouverts", group: "email" },
+    { key: "openRate", label: "Taux ouv.", group: "email" },
+    { key: "clicked", label: "Clics", group: "email" },
+    { key: "replied", label: "Réponses", group: "email" },
+    { key: "replyRate", label: "Taux rép.", group: "email" },
+    { key: "bounced", label: "Rebonds", group: "email" },
+    { key: "liInvites", label: "Invit. LI", group: "linkedin" },
+    { key: "liAccepted", label: "Acceptées", group: "linkedin" },
+    { key: "liAcceptRate", label: "Taux acc.", group: "linkedin" },
+    { key: "liReplied", label: "Rép. LI", group: "linkedin" },
     { key: "interested", label: "Intéressés" },
   ];
 
@@ -140,6 +150,10 @@ export function OutboundCampaignTable({ campaigns, stats }: Props) {
               <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.replied)}</td>
               <td className="py-3 px-3 text-right tabular-nums">{formatPercent(row.replyRate)}</td>
               <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.bounced)}</td>
+              <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.liInvites)}</td>
+              <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.liAccepted)}</td>
+              <td className="py-3 px-3 text-right tabular-nums">{formatPercent(row.liAcceptRate)}</td>
+              <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.liReplied)}</td>
               <td className="py-3 px-3 text-right tabular-nums">{formatNumber(row.stats.interested)}</td>
             </tr>
           ))}

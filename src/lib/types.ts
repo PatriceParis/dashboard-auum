@@ -89,22 +89,34 @@ export interface LemlistCampaign {
 export interface LemlistCampaignStats {
   campaignId: string;
   campaignName: string;
+  // Email metrics
   sent: number;
   opened: number;
   clicked: number;
   replied: number;
   bounced: number;
   interested: number;
+  // LinkedIn metrics
+  liInvites: number;
+  liAccepted: number;
+  liSent: number;
+  liReplied: number;
 }
 
 export interface LemlistDailyActivity {
   date: string; // YYYY-MM-DD
   campaignId: string;
+  // Email metrics
   sent: number;
   opened: number;
   clicked: number;
   replied: number;
   bounced: number;
+  // LinkedIn metrics
+  liInvites: number;
+  liAccepted: number;
+  liSent: number;
+  liReplied: number;
 }
 
 export interface LemlistData {
@@ -115,10 +127,16 @@ export interface LemlistData {
 }
 
 export interface OutboundKPIs {
-  emailsSent: number;
-  openRate: number;
-  clickRate: number;
-  replyRate: number;
-  bounceRate: number;
+  // Cross-channel
+  totalContacted: number;
+  totalReplies: number;
   interested: number;
+  // Email
+  emailsSent: number;
+  emailOpenRate: number;
+  emailReplyRate: number;
+  // LinkedIn
+  liInvites: number;
+  liAcceptRate: number;
+  liReplied: number;
 }

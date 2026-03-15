@@ -22,19 +22,27 @@ export function OutboundSection({ data, filteredDailyActivities }: Props) {
     // Aggregate filtered daily activities per campaign
     const statsMap = new Map<string, {
       sent: number; opened: number; clicked: number; replied: number; bounced: number;
+      liInvites: number; liAccepted: number; liSent: number; liReplied: number;
     }>();
     for (const d of filteredDailyActivities) {
-      const existing = statsMap.get(d.campaignId) || { sent: 0, opened: 0, clicked: 0, replied: 0, bounced: 0 };
+      const existing = statsMap.get(d.campaignId) || {
+        sent: 0, opened: 0, clicked: 0, replied: 0, bounced: 0,
+        liInvites: 0, liAccepted: 0, liSent: 0, liReplied: 0,
+      };
       existing.sent += d.sent;
       existing.opened += d.opened;
       existing.clicked += d.clicked;
       existing.replied += d.replied;
       existing.bounced += d.bounced;
+      existing.liInvites += d.liInvites;
+      existing.liAccepted += d.liAccepted;
+      existing.liSent += d.liSent;
+      existing.liReplied += d.liReplied;
       statsMap.set(d.campaignId, existing);
     }
     return data.campaignStats.map((cs) => {
       const filtered = statsMap.get(cs.campaignId);
-      if (!filtered) return { ...cs, sent: 0, opened: 0, clicked: 0, replied: 0, bounced: 0 };
+      if (!filtered) return { ...cs, sent: 0, opened: 0, clicked: 0, replied: 0, bounced: 0, liInvites: 0, liAccepted: 0, liSent: 0, liReplied: 0 };
       return { ...cs, ...filtered };
     });
   }, [data, filteredDailyActivities]);

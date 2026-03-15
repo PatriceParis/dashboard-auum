@@ -19,9 +19,11 @@ interface Props {
 }
 
 const LABELS: Record<string, string> = {
-  sent: "Envoyés",
-  opened: "Ouverts",
-  replied: "Réponses",
+  sent: "Emails envoyés",
+  opened: "Emails ouverts",
+  replied: "Réponses email",
+  liInvites: "Invitations LI",
+  liReplied: "Réponses LI",
 };
 
 function CustomTooltip({ active, payload, label }: any) {
@@ -41,12 +43,14 @@ function CustomTooltip({ active, payload, label }: any) {
 export function OutboundChart({ data }: Props) {
   const chartData = useMemo(() => {
     // Aggregate by date across all campaigns
-    const byDate = new Map<string, { sent: number; opened: number; replied: number }>();
+    const byDate = new Map<string, { sent: number; opened: number; replied: number; liInvites: number; liReplied: number }>();
     for (const d of data) {
-      const existing = byDate.get(d.date) || { sent: 0, opened: 0, replied: 0 };
+      const existing = byDate.get(d.date) || { sent: 0, opened: 0, replied: 0, liInvites: 0, liReplied: 0 };
       existing.sent += d.sent;
       existing.opened += d.opened;
       existing.replied += d.replied;
+      existing.liInvites += d.liInvites;
+      existing.liReplied += d.liReplied;
       byDate.set(d.date, existing);
     }
 
@@ -84,6 +88,14 @@ export function OutboundChart({ data }: Props) {
           <linearGradient id="gradReplied" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#9333ea" stopOpacity={0.15} />
             <stop offset="95%" stopColor="#9333ea" stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="gradLiInvites" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#0a66c2" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="#0a66c2" stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="gradLiReplied" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#e65100" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="#e65100" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -124,6 +136,22 @@ export function OutboundChart({ data }: Props) {
           stroke="#9333ea"
           strokeWidth={2}
           fill="url(#gradReplied)"
+        />
+        <Area
+          type="monotone"
+          dataKey="liInvites"
+          stroke="#0a66c2"
+          strokeWidth={2}
+          fill="url(#gradLiInvites)"
+          strokeDasharray="5 3"
+        />
+        <Area
+          type="monotone"
+          dataKey="liReplied"
+          stroke="#e65100"
+          strokeWidth={2}
+          fill="url(#gradLiReplied)"
+          strokeDasharray="5 3"
         />
       </AreaChart>
     </ResponsiveContainer>

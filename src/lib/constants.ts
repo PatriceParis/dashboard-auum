@@ -34,10 +34,13 @@ export const KPI_CONFIG = [
 ] as const;
 
 export const OUTBOUND_KPI_CONFIG = [
-  { key: "emailsSent", label: "Emails envoyés", format: "number" },
-  { key: "openRate", label: "Taux d'ouverture", format: "percent" },
-  { key: "clickRate", label: "Taux de clic", format: "percent" },
-  { key: "replyRate", label: "Taux de réponse", format: "percent" },
-  { key: "bounceRate", label: "Taux de rebond", format: "percent" },
+  { key: "totalContacted", label: "Contacts touchés", format: "number" },
+  { key: "totalReplies", label: "Réponses totales", format: "number" },
   { key: "interested", label: "Intéressés", format: "number" },
+  { key: "emailsSent", label: "Emails envoyés", format: "number" },
+  { key: "emailOpenRate", label: "Taux ouverture email", format: "percent" },
+  { key: "emailReplyRate", label: "Taux réponse email", format: "percent" },
+  { key: "liInvites", label: "Invitations LinkedIn", format: "number" },
+  { key: "liAcceptRate", label: "Taux acceptation LI", format: "percent" },
+  { key: "liReplied", label: "Réponses LinkedIn", format: "number" },
 ] as const;
