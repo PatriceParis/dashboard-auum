@@ -158,7 +158,7 @@ async function main() {
   writeJSON("analytics.json", analyticsResults);
 
   // 5. Fetch Daily Analytics
-  console.log("5. Fetching daily analytics (last 30 days)...");
+  console.log("5. Fetching daily analytics (last 365 days)...");
   const dailyResults: DailyAnalytics[] = [];
   try {
     const dailyMap = new Map<string, DailyAnalytics>();
@@ -166,7 +166,7 @@ async function main() {
     // Batch all campaigns in groups of 20
     for (let i = 0; i < campaignUrns.length; i += 20) {
       const batch = campaignUrns.slice(i, i + 20);
-      const dailyData = await client.getDailyAnalytics(batch, 30);
+      const dailyData = await client.getDailyAnalytics(batch, 365);
 
       if (i === 0 && dailyData.elements.length > 0) {
         console.log(`  Daily analytics keys: ${Object.keys(dailyData.elements[0]).join(", ")}`);
@@ -313,8 +313,12 @@ async function main() {
   console.log(`  → ${creatives.length} creatives processed`);
   writeJSON("creatives.json", creatives);
 
-  // 7. Write timestamp
-  writeJSON("last-updated.json", { timestamp: new Date().toISOString() });
+  // 7. Write timestamp + data period
+  const allDates = dailyResults.map((d) => d.date).sort();
+  const period = allDates.length > 0
+    ? { start: allDates[0], end: allDates[allDates.length - 1] }
+    : undefined;
+  writeJSON("last-updated.json", { timestamp: new Date().toISOString(), period });
 
   console.log("\n✓ Data fetch complete!\n");
 }

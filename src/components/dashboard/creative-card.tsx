@@ -70,11 +70,11 @@ export function CreativeCard({ creative, campaignName }: Props) {
             </video>
           </div>
         ) : creative.localMediaPath ? (
-          <div className="relative aspect-[16/9] overflow-hidden">
+          <div className="relative overflow-hidden bg-muted">
             <img
               src={creative.localMediaPath}
               alt={creative.headline || creative.name}
-              className="w-full h-full object-cover"
+              className="w-full h-auto block"
             />
           </div>
         ) : (
