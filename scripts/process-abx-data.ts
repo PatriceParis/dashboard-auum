@@ -336,6 +336,14 @@ async function main() {
   const liAds = loadLinkedInAds();
   const prospects = loadDynamicsProspects();
   const devis = loadDynamicsDevis();
+
+  // Skip processing if no import files are available (Vercel build without imports)
+  // This lets the data-loader fall back to data-static/ with pre-computed data
+  if (liAds.length === 0 && prospects.length === 0 && devis.length === 0) {
+    console.log("\n  No import files found — skipping ABX processing (will use data-static fallback)");
+    return;
+  }
+
   const lemlistLeads = await loadLemlistLeads();
 
   // Build domain registry from Lemlist leads
