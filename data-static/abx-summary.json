@@ -1,0 +1,20 @@
+{
+  "totalCompanies": 7239,
+  "companiesReachedByPaid": 3642,
+  "companiesReachedByOutbound": 2248,
+  "companiesInCRM": 2062,
+  "influencedCount": 346,
+  "influencedWithDevis": 185,
+  "influencedWithWon": 106,
+  "influencedPipeline": 349986.3,
+  "influencedRevenue": 4759316.879999999,
+  "totalAdSpend": 14889.214729978159,
+  "pipelineEfficiency": 23.506028111431057,
+  "roas": 319.6486158815026,
+  "funnel": {
+    "reached": 5523,
+    "inCRM": 346,
+    "withDevis": 185,
+    "won": 106
+  }
+}

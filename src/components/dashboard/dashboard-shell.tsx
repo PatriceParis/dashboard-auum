@@ -4,14 +4,15 @@ import { useState, useMemo } from "react";
 import type { DashboardData } from "@/lib/types";
 import { RegionTab } from "./region-tab";
 import { OutboundSection } from "./outbound-section";
+import { ABXSection } from "./abx-section";
 import { DateSelector } from "./date-selector";
-import { Clock, BarChart3, Megaphone, Send } from "lucide-react";
+import { Clock, BarChart3, Megaphone, Send, Crosshair } from "lucide-react";
 
 interface Props {
   data: DashboardData;
 }
 
-type Tab = "paid" | "outbound";
+type Tab = "paid" | "outbound" | "abx";
 
 export function DashboardShell({ data }: Props) {
 
@@ -89,6 +90,7 @@ export function DashboardShell({ data }: Props) {
     : "N/A";
 
   const hasLemlist = data.lemlist && data.lemlist.campaigns.length > 0;
+  const hasABX = !!data.abx;
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -145,6 +147,19 @@ export function DashboardShell({ data }: Props) {
             Outbound Dashboard
           </button>
         )}
+        {hasABX && (
+          <button
+            onClick={() => setActiveTab("abx")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px ${
+              activeTab === "abx"
+                ? "border-emerald-500 text-emerald-600"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300"
+            }`}
+          >
+            <Crosshair className="w-4 h-4" />
+            ABX Dashboard
+          </button>
+        )}
       </div>
 
       {/* Tab content */}
@@ -157,6 +172,10 @@ export function DashboardShell({ data }: Props) {
           data={data.lemlist!}
           filteredDailyActivities={filteredLemlistDaily}
         />
+      )}
+
+      {activeTab === "abx" && hasABX && (
+        <ABXSection data={data.abx!} />
       )}
     </div>
   );

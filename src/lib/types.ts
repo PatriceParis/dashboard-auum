@@ -64,6 +64,62 @@ export interface DashboardData {
   lastUpdated: string;
   dataPeriod?: { start: string; end: string };
   lemlist?: LemlistData;
+  abx?: ABXData;
+}
+
+// ── ABX (Account-Based Experience) ──
+
+export interface ABXCompany {
+  name: string;
+  domain: string;
+  linkedinUrl: string;
+  // LinkedIn Ads
+  paidImpressions: number;
+  paidClicks: number;
+  paidEngagements: number;
+  paidLeads: number;
+  paidEngagement: string;
+  // Outbound (Lemlist)
+  outboundLeads: number;
+  outboundCampaigns: string[];
+  // Dynamics CRM
+  prospects: number;
+  prospectStatuses: Record<string, number>;
+  devisCount: number;
+  devisWon: number;
+  devisActive: number;
+  pipeline: number;
+  revenue: number;
+  // Influence
+  influencedByPaid: boolean;
+  influencedByOutbound: boolean;
+  inCRM: boolean;
+}
+
+export interface ABXSummary {
+  totalCompanies: number;
+  companiesReachedByPaid: number;
+  companiesReachedByOutbound: number;
+  companiesInCRM: number;
+  influencedCount: number;
+  influencedWithDevis: number;
+  influencedWithWon: number;
+  influencedPipeline: number;
+  influencedRevenue: number;
+  totalAdSpend: number;
+  pipelineEfficiency: number;
+  roas: number;
+  funnel: {
+    reached: number;
+    inCRM: number;
+    withDevis: number;
+    won: number;
+  };
+}
+
+export interface ABXData {
+  companies: ABXCompany[];
+  summary: ABXSummary;
 }
 
 export interface ComputedKPIs {

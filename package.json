@@ -9,7 +9,8 @@
     "start": "npx serve out",
     "auth": "npx tsx scripts/auth/get-token.ts",
     "refresh-token": "npx tsx scripts/auth/refresh-token.ts",
-    "fetch-data": "npx tsx scripts/fetch-linkedin-data.ts && npx tsx scripts/fetch-lemlist-data.ts",
+    "fetch-data": "npx tsx scripts/fetch-linkedin-data.ts && npx tsx scripts/fetch-lemlist-data.ts && npx tsx scripts/process-abx-data.ts",
+    "process-abx": "npx tsx scripts/process-abx-data.ts",
     "fetch-lemlist": "npx tsx scripts/fetch-lemlist-data.ts",
     "update": "npm run fetch-data && npm run build"
   },
@@ -30,6 +31,7 @@
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "xlsx": "^0.18.5"
   }
 }
