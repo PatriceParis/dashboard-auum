@@ -63,9 +63,10 @@ function excelSerialToISO(serial: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-function writeJSON(filename: string, data: unknown) {
-  fs.writeFileSync(path.join(DATA_DIR, filename), JSON.stringify(data, null, 2));
-  console.log(`  ✓ ${filename}`);
+function writeJSON(filename: string, data: unknown, minify = false) {
+  const json = minify ? JSON.stringify(data) : JSON.stringify(data, null, 2);
+  fs.writeFileSync(path.join(DATA_DIR, filename), json);
+  console.log(`  ✓ ${filename} (${(json.length / 1024).toFixed(0)} KB)`);
 }
 
 // ── Types ───────────────────────────────────────────────────────────
@@ -509,9 +510,12 @@ async function main() {
 
   // ── Output JSON ──
 
-  // Sort by: influenced first, then by revenue, pipeline, prospects
+  // Only keep companies that are influenced AND in CRM, or have devis/revenue
   const output = allCompanies
-    .filter((c) => c.influencedByPaid || c.influencedByOutbound || c.inCRM)
+    .filter((c) =>
+      ((c.influencedByPaid || c.influencedByOutbound) && c.inCRM) ||
+      c.devisCount > 0 || c.revenue > 0
+    )
     .sort((a, b) => {
       // Influenced companies first
       const aInf = (a.influencedByPaid || a.influencedByOutbound) && a.inCRM ? 1 : 0;
@@ -565,13 +569,13 @@ async function main() {
   };
 
   console.log("\nWriting output files:");
-  writeJSON("abx-companies.json", output);
+  writeJSON("abx-companies.json", output, true);
   writeJSON("abx-summary.json", summary);
 
   // Also copy to data-static/ for committed fallback (when imports are available)
   const staticDir = path.join(process.cwd(), "data-static");
   if (output.length > 0 && fs.existsSync(staticDir)) {
-    fs.writeFileSync(path.join(staticDir, "abx-companies.json"), JSON.stringify(output, null, 2));
+    fs.writeFileSync(path.join(staticDir, "abx-companies.json"), JSON.stringify(output));
     fs.writeFileSync(path.join(staticDir, "abx-summary.json"), JSON.stringify(summary, null, 2));
     console.log("  ✓ Updated data-static/ fallback");
   }
