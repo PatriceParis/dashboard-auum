@@ -1,20 +1,20 @@
 {
-  "totalCompanies": 774,
-  "companiesReachedByPaid": 3642,
-  "companiesReachedByOutbound": 2248,
+  "totalCompanies": 718,
+  "companiesReachedByPaid": 3475,
+  "companiesReachedByOutbound": 2253,
   "companiesInCRM": 2062,
-  "influencedCount": 346,
-  "influencedWithDevis": 185,
-  "influencedWithWon": 106,
-  "influencedPipeline": 349986.3,
-  "influencedRevenue": 4759316.879999999,
+  "influencedCount": 257,
+  "influencedWithDevis": 152,
+  "influencedWithWon": 81,
+  "influencedPipeline": 328636.3,
+  "influencedRevenue": 4131127.38,
   "totalAdSpend": 14889.214729978159,
-  "pipelineEfficiency": 23.506028111431057,
-  "roas": 319.6486158815026,
+  "pipelineEfficiency": 22.072104268757634,
+  "roas": 277.4577071336293,
   "funnel": {
-    "reached": 5523,
-    "inCRM": 346,
-    "withDevis": 185,
-    "won": 106
+    "reached": 5434,
+    "inCRM": 257,
+    "withDevis": 152,
+    "won": 81
   }
 }

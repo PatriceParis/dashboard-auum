@@ -134,6 +134,7 @@ interface ABXCompany {
   influencedByPaid: boolean;
   influencedByOutbound: boolean;
   inCRM: boolean;
+  earliestCRMDate: string; // YYYY-MM-DD — earliest prospect or devis creation
 }
 
 // ── Data Loading ────────────────────────────────────────────────────
@@ -346,6 +347,17 @@ async function main() {
 
   const lemlistLeads = await loadLemlistLeads();
 
+  // LinkedIn Ads period: 180 days before export date
+  // Only prospects/devis created AFTER this date can be "influenced" by paid ads
+  const LI_ADS_CSV = path.join(IMPORTS_DIR, "linkedin-ads-companies.csv");
+  const exportStat = fs.existsSync(LI_ADS_CSV) ? fs.statSync(LI_ADS_CSV) : null;
+  const exportDate = exportStat ? new Date(exportStat.mtime) : new Date();
+  const adsPeriodStart = new Date(exportDate);
+  adsPeriodStart.setDate(adsPeriodStart.getDate() - 180);
+  const adsPeriodStartISO = adsPeriodStart.toISOString().slice(0, 10);
+  console.log(`\n  LinkedIn Ads period: ${adsPeriodStartISO} → ${exportDate.toISOString().slice(0, 10)}`);
+  console.log(`  Only prospects/devis created after ${adsPeriodStartISO} count as "influenced by paid"`);
+
   // Build domain registry from Lemlist leads
   console.log("\nBuilding domain registry:");
   const registry = buildDomainRegistry(lemlistLeads);
@@ -390,6 +402,7 @@ async function main() {
         influencedByPaid: false,
         influencedByOutbound: false,
         inCRM: false,
+        earliestCRMDate: "",
       };
       companies.set(key, company);
     }
@@ -445,6 +458,7 @@ async function main() {
 
   console.log("\nMatching Dynamics prospects:");
   let prospectMatched = 0;
+  let prospectAfterAds = 0;
   for (const p of prospects) {
     if (!p.companyName) continue;
     const domain = matchCompanyToDomain(p.companyName, registry) || "";
@@ -452,9 +466,15 @@ async function main() {
     company.prospects++;
     company.prospectStatuses[p.status] = (company.prospectStatuses[p.status] || 0) + 1;
     company.inCRM = true;
+    // Track earliest CRM date for this company (for temporal filtering)
+    if (p.createdAt && (!company.earliestCRMDate || p.createdAt < company.earliestCRMDate)) {
+      company.earliestCRMDate = p.createdAt;
+    }
+    if (p.createdAt >= adsPeriodStartISO) prospectAfterAds++;
     if (domain) prospectMatched++;
   }
   console.log(`  ${prospectMatched}/${prospects.length} matched to domains`);
+  console.log(`  ${prospectAfterAds} prospects created after ads period (${adsPeriodStartISO})`);
 
   // ── Pass 4: Index Dynamics Devis ──
 
@@ -481,6 +501,10 @@ async function main() {
     const company = getOrCreate(domain, clientName || d.name);
     company.devisCount++;
     company.inCRM = true;
+    // Track earliest CRM date
+    if (d.createdAt && (!company.earliestCRMDate || d.createdAt < company.earliestCRMDate)) {
+      company.earliestCRMDate = d.createdAt;
+    }
     if (d.status === "Conclue") {
       company.devisWon++;
       company.revenue += d.amount;
@@ -492,9 +516,25 @@ async function main() {
   }
   console.log(`  ${devisMatched}/${devis.length} matched to domains`);
 
-  // ── Compute summary stats ──
+  // ── Temporal influence filter ──
+  // A company is "influenced by paid" only if it entered the CRM
+  // AFTER the LinkedIn Ads period started (ads preceded the CRM entry)
 
   const allCompanies = [...companies.values()];
+  let paidInfluenceFiltered = 0;
+  for (const c of allCompanies) {
+    if (c.influencedByPaid && c.inCRM && c.earliestCRMDate) {
+      if (c.earliestCRMDate < adsPeriodStartISO) {
+        // Company entered CRM BEFORE ads started — not influenced by paid
+        c.influencedByPaid = false;
+        paidInfluenceFiltered++;
+      }
+    }
+  }
+  console.log(`\n  Temporal filter: ${paidInfluenceFiltered} companies removed from paid influence (entered CRM before ${adsPeriodStartISO})`);
+
+  // ── Compute summary stats ──
+
   const influenced = allCompanies.filter(
     (c) => (c.influencedByPaid || c.influencedByOutbound) && c.inCRM
   );
