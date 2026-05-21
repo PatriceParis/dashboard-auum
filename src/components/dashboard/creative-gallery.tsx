@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { Creative, Campaign } from "@/lib/types";
+import type { Creative, Campaign, CreativeAnalytics } from "@/lib/types";
 import { CreativeCard } from "./creative-card";
 import { FileText, Image, Video, Layers, Filter } from "lucide-react";
 
 interface Props {
   creatives: Creative[];
   campaigns: Campaign[];
+  creativeAnalytics?: CreativeAnalytics[];
 }
 
 const MEDIA_FILTERS = [
@@ -19,9 +20,10 @@ const MEDIA_FILTERS = [
 
 type MediaFilter = typeof MEDIA_FILTERS[number]["key"];
 
-export function CreativeGallery({ creatives, campaigns }: Props) {
+export function CreativeGallery({ creatives, campaigns, creativeAnalytics = [] }: Props) {
   const [activeFilter, setActiveFilter] = useState<MediaFilter>("all");
   const campaignMap = new Map(campaigns.map((c) => [c.id, c]));
+  const analyticsMap = useMemo(() => new Map(creativeAnalytics.map((a) => [a.creativeId, a])), [creativeAnalytics]);
 
   const counts = useMemo(() => {
     const c = { all: creatives.length, document: 0, image: 0, video: 0 };
@@ -73,6 +75,7 @@ export function CreativeGallery({ creatives, campaigns }: Props) {
             key={creative.id}
             creative={creative}
             campaignName={campaignMap.get(creative.campaignId)?.campaignGroupName || campaignMap.get(creative.campaignId)?.name}
+            ctr90d={analyticsMap.get(creative.id)?.ctr}
           />
         ))}
       </div>

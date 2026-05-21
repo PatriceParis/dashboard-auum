@@ -5,6 +5,7 @@ import { FileText, Globe, MoreHorizontal, Image, Video, Play } from "lucide-reac
 interface Props {
   creative: Creative;
   campaignName?: string;
+  ctr90d?: number; // CTR over last 90 days (%)
 }
 
 const MEDIA_BADGE: Record<Creative["mediaType"], { label: string; className: string }> = {
@@ -15,19 +16,32 @@ const MEDIA_BADGE: Record<Creative["mediaType"], { label: string; className: str
   unknown: { label: "Autre", className: "bg-gray-100 text-gray-600" },
 };
 
-export function CreativeCard({ creative, campaignName }: Props) {
+function ctrBadgeStyle(ctr: number): string {
+  if (ctr >= 1.5) return "bg-emerald-100 text-emerald-700";
+  if (ctr >= 0.5) return "bg-amber-100 text-amber-700";
+  return "bg-red-100 text-red-700";
+}
+
+export function CreativeCard({ creative, campaignName, ctr90d }: Props) {
   const badge = MEDIA_BADGE[creative.mediaType];
 
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-card flex flex-col h-full">
-      {/* Campaign name + media type badge */}
+      {/* Campaign name + badges */}
       <div className="px-3 py-2 flex items-center justify-between gap-2 bg-muted/30 border-b border-border">
         <span className="text-xs text-muted-foreground truncate">
           {campaignName || "—"}
         </span>
-        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${badge.className}`}>
-          {badge.label}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {ctr90d != null && (
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${ctrBadgeStyle(ctr90d)}`}>
+              CTR {ctr90d.toFixed(2)}%
+            </span>
+          )}
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${badge.className}`}>
+            {badge.label}
+          </span>
+        </div>
       </div>
 
       {/* LinkedIn Post Header */}

@@ -37,6 +37,7 @@ export function loadDashboardData(): DashboardData {
     creatives: (readJSON("creatives.json", []) as DashboardData["creatives"]).filter(
       (cr) => activeCampaignIds.has(cr.campaignId)
     ),
+    creativeAnalytics: readJSON("creative-analytics.json", []) as DashboardData["creativeAnalytics"],
     lastUpdated: meta.timestamp,
     dataPeriod: meta.period,
     lemlist: {

@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { LinkedInAPIClient } from "./api-client";
 import { REGION_KEYWORDS } from "../src/lib/constants";
-import type { Campaign, CampaignGroup, CampaignAnalytics, DailyAnalytics, Creative, Region } from "../src/lib/types";
+import type { Campaign, CampaignGroup, CampaignAnalytics, DailyAnalytics, Creative, CreativeAnalytics, Region } from "../src/lib/types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const CREATIVES_DIR = path.join(process.cwd(), "public", "creatives");
@@ -313,7 +313,35 @@ async function main() {
   console.log(`  → ${creatives.length} creatives processed`);
   writeJSON("creatives.json", creatives);
 
-  // 7. Write timestamp + data period
+  // 7. Fetch Creative Analytics (last 90 days, pivot=CREATIVE)
+  console.log("7. Fetching creative-level analytics (last 90 days)...");
+  const creativeAnalytics: CreativeAnalytics[] = [];
+  try {
+    for (let i = 0; i < campaignUrns.length; i += 20) {
+      const batch = campaignUrns.slice(i, i + 20);
+      const result = await client.getCreativeAnalytics(batch, 90);
+      for (const el of result.elements) {
+        const rawPivot = (el as any).pivotValues?.[0] || (el as any).pivotValue || "";
+        const numericId = String(rawPivot).replace(/^urn:li:sponsoredCreative:/, "");
+        if (!numericId) continue;
+        const impressions = el.impressions || 0;
+        const clicks = el.clicks || 0;
+        const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
+        creativeAnalytics.push({
+          creativeId: `creative_${numericId}`,
+          impressions,
+          clicks,
+          ctr: Math.round(ctr * 100) / 100,
+        });
+      }
+    }
+  } catch (err) {
+    console.warn(`  ⚠ Creative analytics failed: ${err}`);
+  }
+  console.log(`  Got analytics for ${creativeAnalytics.length} creatives`);
+  writeJSON("creative-analytics.json", creativeAnalytics);
+
+  // 8. Write timestamp + data period
   const allDates = dailyResults.map((d) => d.date).sort();
   const period = allDates.length > 0
     ? { start: allDates[0], end: allDates[allDates.length - 1] }

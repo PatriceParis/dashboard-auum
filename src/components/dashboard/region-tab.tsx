@@ -57,6 +57,7 @@ export function RegionTab({ data, region }: Props) {
           <CreativeGallery
             creatives={filteredCreatives}
             campaigns={filteredCampaigns}
+            creativeAnalytics={data.creativeAnalytics}
           />
         </div>
       )}

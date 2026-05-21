@@ -191,6 +191,21 @@ export class LinkedInAPIClient {
     }> }>(`/rest/adAnalytics?q=analytics&pivot=CAMPAIGN&timeGranularity=DAILY&dateRange=${dateRange}&campaigns=List(${campaignsList})&fields=impressions,clicks,costInLocalCurrency,oneClickLeads,externalWebsiteConversions,pivotValues,dateRange`);
   }
 
+  // ── Creative Analytics (pivot by CREATIVE, last N days) ──
+  async getCreativeAnalytics(campaignUrns: string[], days = 90) {
+    const now = new Date();
+    const start = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    const campaignsList = campaignUrns.map(encodeURIComponent).join(",");
+    const dateRange = `(start:(year:${start.getFullYear()},month:${start.getMonth() + 1},day:${start.getDate()}),end:(year:${now.getFullYear()},month:${now.getMonth() + 1},day:${now.getDate()}))`;
+
+    return this.getRaw<{ elements: Array<{
+      impressions: number;
+      clicks: number;
+      pivotValues?: string[];
+      pivotValue?: string;
+    }> }>(`/rest/adAnalytics?q=analytics&pivot=CREATIVE&timeGranularity=ALL&dateRange=${dateRange}&campaigns=List(${campaignsList})&fields=impressions,clicks,pivotValues,dateRange`);
+  }
+
   // ── Creatives (uses legacy v2 API as /rest/ endpoint doesn't support creatives) ──
   async getCreatives(accountId: number) {
     // Get all campaign IDs for this account, then fetch creatives per campaign

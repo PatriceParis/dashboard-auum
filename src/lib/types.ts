@@ -55,12 +55,20 @@ export interface Creative {
   landingPageUrl?: string;
 }
 
+export interface CreativeAnalytics {
+  creativeId: string; // matches Creative.id (e.g. "creative_12345")
+  impressions: number;
+  clicks: number;
+  ctr: number; // pre-computed: clicks/impressions * 100
+}
+
 export interface DashboardData {
   campaignGroups: CampaignGroup[];
   campaigns: Campaign[];
   analytics: CampaignAnalytics[];
   dailyAnalytics: DailyAnalytics[];
   creatives: Creative[];
+  creativeAnalytics: CreativeAnalytics[];
   lastUpdated: string;
   dataPeriod?: { start: string; end: string };
   lemlist?: LemlistData;
